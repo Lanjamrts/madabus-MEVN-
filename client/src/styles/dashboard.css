@@ -1,0 +1,326 @@
+.dashboard-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.dashboard-header {
+  margin-bottom: 2rem;
+}
+
+.dashboard-header h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.25rem;
+}
+
+.dashboard-header p {
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.stat-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 0.75rem;
+}
+
+.stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.stat-icon.green { background: #dcfce7; }
+.stat-icon.red { background: #fff1f2; }
+.stat-icon.blue { background: #eff6ff; }
+.stat-icon.yellow { background: #fef9c3; }
+
+.stat-card h3 {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.stat-value {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+/* Tableaux */
+.table-container {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.table-header h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead th {
+  text-align: left;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+tbody td {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  color: #374151;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: #f9fafb; }
+
+.badge {
+  display: inline-flex;
+  padding: 3px 10px;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge.en_attente { background: #fef9c3; color: #854d0e; }
+.badge.confirmee { background: #dcfce7; color: #166534; }
+.badge.annulee { background: #fff1f2; color: #c8102e; }
+.badge.terminee { background: #eff6ff; color: #1e40af; }
+.badge.impaye { background: #fef9c3; color: #854d0e; }
+.badge.paye { background: #dcfce7; color: #166534; }
+.badge.rembourse { background: #eff6ff; color: #1e40af; }
+.badge.actif { background: #dcfce7; color: #166534; }
+.badge.annule { background: #fff1f2; color: #c8102e; }
+.badge.termine { background: #eff6ff; color: #1e40af; }
+
+.btn-action {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-action.green { background: #dcfce7; color: #166534; }
+.btn-action.green:hover { background: #bbf7d0; }
+.btn-action.red { background: #fff1f2; color: #c8102e; }
+.btn-action.red:hover { background: #fecdd3; }
+.btn-action.blue { background: #eff6ff; color: #1e40af; }
+.btn-action.blue:hover { background: #bfdbfe; }
+.btn-action.gray { background: #f3f4f6; color: #374151; }
+.btn-action.gray:hover { background: #e5e7eb; }
+
+/* Detail trajet */
+.detail-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.detail-card {
+  background: white;
+  border-radius: 24px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+}
+
+.detail-img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  background: linear-gradient(135deg, #e0f2fe, #dcfce7);
+}
+
+.detail-body {
+  padding: 2rem;
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.detail-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.detail-price {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #1a7a3c;
+}
+
+.detail-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: #f9fafb;
+  border-radius: 16px;
+}
+
+.detail-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-info-item label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.detail-info-item span {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.detail-desc {
+  font-size: 0.95rem;
+  color: #6b7280;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+/* Reservation form */
+.reservation-form {
+  background: #f9fafb;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.reservation-form h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 1rem;
+}
+
+/* Stepper */
+.stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 2rem;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.step-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  transition: background 0.3s, color 0.3s;
+}
+
+.step-circle.active {
+  background: #1a7a3c;
+  color: white;
+}
+
+.step-circle.done {
+  background: #1a7a3c;
+  color: white;
+}
+
+.step-circle.pending {
+  background: #e5e7eb;
+  color: #9ca3af;
+}
+
+.step-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.step-label.pending {
+  color: #9ca3af;
+}
+
+.step-connector {
+  width: 40px;
+  height: 2px;
+  background: #e5e7eb;
+  margin: 0 8px;
+}
+
+.step-connector.done {
+  background: #1a7a3c;
+}
+
+@media (max-width: 640px) {
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .table-container { overflow-x: auto; }
+  .detail-body { padding: 1.25rem; }
+}
