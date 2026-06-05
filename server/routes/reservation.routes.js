@@ -9,6 +9,7 @@ const {
   annulerReservation,
   listerReservations,
   mettreAJourStatut,
+  obtenirTicket,
 } = require("../controllers/reservation.controller");
 
 router.post(
@@ -24,8 +25,9 @@ router.post(
 
 router.get("/mes-reservations", proteger, autoriser("voyageur"), mesReservations);
 router.get("/:id", proteger, obtenirReservation);
-router.put("/:id/annuler", proteger, autoriser("voyageur", "admin"), annulerReservation);
+router.put("/:id/annuler", proteger, autoriser("voyageur"), annulerReservation);
 router.get("/", proteger, autoriser("cooperative", "admin"), listerReservations);
-router.put("/:id/statut", proteger, autoriser("cooperative", "admin"), mettreAJourStatut);
+router.put("/:id/statut", proteger, autoriser("cooperative"), mettreAJourStatut);
+router.get("/:id/ticket", proteger, autoriser("voyageur"), obtenirTicket);
 
 module.exports = router;

@@ -11,6 +11,7 @@ const statutLabel = {
   en_attente: "En attente",
   confirmee: "Confirmée",
   annulee: "Annulée",
+  refusee: "Refusée",
   terminee: "Terminée",
 };
 
@@ -72,13 +73,13 @@ const DashboardCoop = () => {
 
   const handleStatutReservation = async (id, statut) => {
     try {
-      await reservationService.mettreAJourStatut(id, { statut });
+      const data = await reservationService.mettreAJourStatut(id, { statut });
       setReservations((prev) =>
-        prev.map((r) => (r._id === id ? { ...r, statut } : r))
+        prev.map((r) => (r._id === id ? data.reservation : r))
       );
-      setToast({ message: "Statut mis à jour.", type: "success" });
-    } catch {
-      setToast({ message: "Erreur.", type: "error" });
+      setToast({ message: data.message || "Statut mis à jour.", type: "success" });
+    } catch (err) {
+      setToast({ message: err.response?.data?.message || "Erreur.", type: "error" });
     }
   };
 
@@ -257,6 +258,7 @@ const DashboardCoop = () => {
                   <th>Trajet</th>
                   <th>Places</th>
                   <th>Total</th>
+                  <th>Référence</th>
                   <th>Statut</th>
                   <th>Actions</th>
                 </tr>
@@ -271,12 +273,13 @@ const DashboardCoop = () => {
                     <td>{r.trajet?.titre}<br /><span style={{ fontSize: "0.8rem", color: "#6b7280" }}>{formatDate(r.trajet?.dateDepart)}</span></td>
                     <td>{r.nombrePlaces}</td>
                     <td><strong>{r.montantTotal.toLocaleString()} Ar</strong></td>
+                    <td style={{ fontFamily: "monospace", fontSize: "0.8rem" }}>{r.reference || "-"}</td>
                     <td><span className={`badge ${r.statut}`}>{statutLabel[r.statut]}</span></td>
                     <td>
                       {r.statut === "en_attente" && (
                         <div style={{ display: "flex", gap: "0.25rem" }}>
                           <button className="btn-action green" onClick={() => handleStatutReservation(r._id, "confirmee")}>Confirmer</button>
-                          <button className="btn-action red" onClick={() => handleStatutReservation(r._id, "annulee")}>Annuler</button>
+                          <button className="btn-action red" onClick={() => handleStatutReservation(r._id, "refusee")}>Refuser</button>
                         </div>
                       )}
                       {r.statut === "confirmee" && (

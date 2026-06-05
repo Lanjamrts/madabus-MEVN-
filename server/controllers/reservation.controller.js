@@ -49,8 +49,9 @@ const creerReservation = async (req, res) => {
       reservation: reservationComplete,
     });
   } catch (error) {
-    console.error("Erreur création réservation:", error);
-    res.status(500).json({ success: false, message: "Erreur serveur." });
+    console.error("❌ Erreur création réservation:", error.message);
+    if (error.code === 11000) console.error("   → Duplicate key error (index)", error.keyValue);
+    res.status(500).json({ success: false, message: "Erreur serveur.", details: error.message });
   }
 };
 
@@ -83,10 +84,15 @@ const obtenirReservation = async (req, res) => {
       return res.status(404).json({ success: false, message: "Réservation introuvable." });
     }
 
-    if (
-      reservation.voyageur.toString() !== req.user._id.toString() &&
-      req.user.role !== "admin"
-    ) {
+    const estVoyageur = reservation.voyageur.toString() === req.user._id.toString();
+    const estAdmin = req.user.role === "admin";
+    const estCooperativeProprietaire =
+      req.user.role === "cooperative" &&
+      reservation.trajet &&
+      reservation.trajet.cooperative &&
+      reservation.trajet.cooperative._id.toString() === req.user._id.toString();
+
+    if (!estVoyageur && !estAdmin && !estCooperativeProprietaire) {
       return res.status(403).json({ success: false, message: "Action non autorisée." });
     }
 
@@ -104,14 +110,11 @@ const annulerReservation = async (req, res) => {
       return res.status(404).json({ success: false, message: "Réservation introuvable." });
     }
 
-    if (
-      reservation.voyageur.toString() !== req.user._id.toString() &&
-      req.user.role !== "admin"
-    ) {
+    if (reservation.voyageur.toString() !== req.user._id.toString()) {
       return res.status(403).json({ success: false, message: "Action non autorisée." });
     }
 
-    if (reservation.statut === "annulee") {
+    if (reservation.statut === "annulee" || reservation.statut === "refusee") {
       return res.status(400).json({ success: false, message: "Réservation déjà annulée." });
     }
 
@@ -159,19 +162,88 @@ const listerReservations = async (req, res) => {
 
 const mettreAJourStatut = async (req, res) => {
   try {
-    const { statut, statutPaiement } = req.body;
-    const reservation = await Reservation.findById(req.params.id);
+    const { statut } = req.body;
+    const reservation = await Reservation.findById(req.params.id).populate("trajet");
     if (!reservation) {
       return res.status(404).json({ success: false, message: "Réservation introuvable." });
     }
 
-    if (statut) reservation.statut = statut;
-    if (statutPaiement) reservation.statutPaiement = statutPaiement;
+    if (req.user.role !== "cooperative") {
+      return res.status(403).json({ success: false, message: "Seule la coopérative peut modifier le statut." });
+    }
+
+    const trajet = await Trajet.findById(reservation.trajet._id || reservation.trajet);
+    if (!trajet || trajet.cooperative.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: "Ce trajet ne vous appartient pas." });
+    }
+
+    const statutsAutorises = ["confirmee", "refusee", "terminee"];
+    if (!statutsAutorises.includes(statut)) {
+      return res.status(400).json({ success: false, message: "Statut invalide." });
+    }
+
+    if (reservation.statut === "annulee" || reservation.statut === "refusee" || reservation.statut === "terminee") {
+      return res.status(400).json({ success: false, message: `Réservation déjà ${reservation.statut}.` });
+    }
+
+    if (statut === "confirmee") {
+      reservation.genererReference();
+      reservation.dateConfirmation = new Date();
+    }
+
+    if (statut === "refusee") {
+      trajet.placesDisponibles += reservation.nombrePlaces;
+      await trajet.save();
+    }
+
+    reservation.statut = statut;
     await reservation.save();
 
-    res.json({ success: true, message: "Statut mis à jour.", reservation });
+    const reservationComplete = await Reservation.findById(reservation._id)
+      .populate({ path: "trajet", populate: { path: "cooperative", select: "nom prenom nomCooperative telephone" } })
+      .populate("voyageur", "nom prenom email telephone");
+
+    const msg =
+      statut === "confirmee"
+        ? "Réservation confirmée. Le ticket a été généré."
+        : statut === "refusee"
+          ? "Réservation refusée."
+          : "Réservation terminée.";
+
+    res.json({ success: true, message: msg, reservation: reservationComplete });
   } catch (error) {
     console.error("Erreur mise à jour statut:", error);
+    res.status(500).json({ success: false, message: "Erreur serveur." });
+  }
+};
+
+const obtenirTicket = async (req, res) => {
+  try {
+    const reservation = await Reservation.findById(req.params.id)
+      .populate({
+        path: "trajet",
+        populate: { path: "cooperative", select: "nom prenom nomCooperative telephone email" },
+      })
+      .populate("voyageur", "nom prenom email telephone");
+
+    if (!reservation) {
+      return res.status(404).json({ success: false, message: "Réservation introuvable." });
+    }
+
+    if (reservation.voyageur._id.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: "Action non autorisée." });
+    }
+
+    if (reservation.statut !== "confirmee" && reservation.statut !== "terminee") {
+      return res.status(400).json({
+        success: false,
+        message: "Le ticket n'est disponible que pour les réservations confirmées.",
+      });
+    }
+
+    res.json({ success: true, ticket: reservation });
+  } catch (error) {
+    console.error("Erreur obtention ticket:", error);
     res.status(500).json({ success: false, message: "Erreur serveur." });
   }
 };
@@ -183,4 +255,5 @@ module.exports = {
   annulerReservation,
   listerReservations,
   mettreAJourStatut,
+  obtenirTicket,
 };

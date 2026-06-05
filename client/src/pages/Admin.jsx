@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import adminService from "../services/admin.service";
-import reservationService from "../services/reservation.service";
-import trajetService from "../services/trajet.service";
 import Toast from "../components/Toast";
 import "../styles/dashboard.css";
 
@@ -10,6 +8,7 @@ const statutLabel = {
   en_attente: "En attente",
   confirmee: "Confirmée",
   annulee: "Annulée",
+  refusee: "Refusée",
   terminee: "Terminée",
 };
 
@@ -28,7 +27,7 @@ const Admin = () => {
         const [statsData, usersData, resData] = await Promise.all([
           adminService.stats(),
           adminService.utilisateurs(),
-          reservationService.listerToutes(),
+          adminService.reservations(),
         ]);
         setStats(statsData.stats);
         setUtilisateurs(usersData.utilisateurs);
@@ -54,13 +53,14 @@ const Admin = () => {
     }
   };
 
-  const handleStatutReservation = async (id, statut) => {
+  const handleSupprimerUtilisateur = async (id) => {
+    if (!window.confirm("Supprimer définitivement cet utilisateur ? Cette action est irréversible.")) return;
     try {
-      await reservationService.mettreAJourStatut(id, { statut });
-      setReservations((prev) => prev.map((r) => (r._id === id ? { ...r, statut } : r)));
-      setToast({ message: "Statut mis à jour.", type: "success" });
+      await adminService.supprimerUtilisateur(id);
+      setUtilisateurs((prev) => prev.filter((u) => u._id !== id));
+      setToast({ message: "Utilisateur supprimé.", type: "success" });
     } catch {
-      setToast({ message: "Erreur.", type: "error" });
+      setToast({ message: "Erreur lors de la suppression.", type: "error" });
     }
   };
 
@@ -89,7 +89,7 @@ const Admin = () => {
 
       <div className="dashboard-header">
         <h1>Administration</h1>
-        <p>Gérez l'ensemble de la plateforme.</p>
+        <p>Supervision de la plateforme.</p>
       </div>
 
       <div className="stats-grid">
@@ -124,13 +124,13 @@ const Admin = () => {
       </div>
 
       <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1.5rem" }}>
-        {["dashboard", "users", "reservations"].map((tab) => (
+        {["users", "reservations"].map((tab) => (
           <button
             key={tab}
             className={`btn-action ${onglet === tab ? "green" : "gray"}`}
             onClick={() => setOnglet(tab)}
           >
-            {tab === "dashboard" ? "Résumé" : tab === "users" ? "Utilisateurs" : "Réservations"}
+            {tab === "users" ? "Utilisateurs" : "Réservations"}
           </button>
         ))}
       </div>
@@ -145,7 +145,7 @@ const Admin = () => {
                 <th>Email</th>
                 <th>Téléphone</th>
                 <th>Rôle</th>
-                <th>Actif</th>
+                <th>Statut</th>
                 <th>Inscription</th>
                 <th>Actions</th>
               </tr>
@@ -164,12 +164,22 @@ const Admin = () => {
                   </td>
                   <td style={{ fontSize: "0.8rem" }}>{new Date(u.createdAt).toLocaleDateString("fr-FR")}</td>
                   <td>
-                    <button
-                      className={`btn-action ${u.actif ? "red" : "green"}`}
-                      onClick={() => handleBasculerStatut(u._id)}
-                    >
-                      {u.actif ? "Désactiver" : "Activer"}
-                    </button>
+                    <div style={{ display: "flex", gap: "0.25rem" }}>
+                      <button
+                        className={`btn-action ${u.actif ? "red" : "green"}`}
+                        onClick={() => handleBasculerStatut(u._id)}
+                      >
+                        {u.actif ? "Désactiver" : "Activer"}
+                      </button>
+                      {u.role !== "admin" && (
+                        <button
+                          className="btn-action red"
+                          onClick={() => handleSupprimerUtilisateur(u._id)}
+                        >
+                          Supprimer
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -180,42 +190,39 @@ const Admin = () => {
 
       {onglet === "reservations" && (
         <div className="table-container">
-          <div className="table-header"><h2>Toutes les réservations</h2></div>
-          <table>
-            <thead>
-              <tr>
-                <th>Client</th>
-                <th>Trajet</th>
-                <th>Places</th>
-                <th>Total</th>
-                <th>Statut</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {reservations.map((r) => (
-                <tr key={r._id}>
-                  <td>{r.voyageur?.prenom} {r.voyageur?.nom}</td>
-                  <td>{r.trajet?.titre || "-"}</td>
-                  <td>{r.nombrePlaces}</td>
-                  <td>{r.montantTotal.toLocaleString()} Ar</td>
-                  <td><span className={`badge ${r.statut}`}>{statutLabel[r.statut]}</span></td>
-                  <td>
-                    <select
-                      value={r.statut}
-                      onChange={(e) => handleStatutReservation(r._id, e.target.value)}
-                      style={{ padding: "6px 8px", borderRadius: "8px", border: "1px solid #e5e7eb", fontSize: "0.8rem" }}
-                    >
-                      <option value="en_attente">En attente</option>
-                      <option value="confirmee">Confirmée</option>
-                      <option value="annulee">Annulée</option>
-                      <option value="terminee">Terminée</option>
-                    </select>
-                  </td>
+          <div className="table-header"><h2>Toutes les réservations (lecture seule)</h2></div>
+          {reservations.length === 0 ? (
+            <div className="empty-state"><h3>Aucune réservation</h3></div>
+          ) : (
+            <table>
+              <thead>
+                <tr>
+                  <th>Client</th>
+                  <th>Trajet</th>
+                  <th>Places</th>
+                  <th>Total</th>
+                  <th>Référence</th>
+                  <th>Statut</th>
+                  <th>Paiement</th>
+                  <th>Date</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {reservations.map((r) => (
+                  <tr key={r._id}>
+                    <td>{r.voyageur?.prenom} {r.voyageur?.nom}</td>
+                    <td>{r.trajet?.titre || "-"}</td>
+                    <td>{r.nombrePlaces}</td>
+                    <td>{r.montantTotal.toLocaleString()} Ar</td>
+                    <td style={{ fontFamily: "monospace", fontSize: "0.8rem" }}>{r.reference || "-"}</td>
+                    <td><span className={`badge ${r.statut}`}>{statutLabel[r.statut]}</span></td>
+                    <td><span className={`badge ${r.statutPaiement}`}>{r.statutPaiement}</span></td>
+                    <td style={{ fontSize: "0.8rem" }}>{formatDate(r.createdAt)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       )}
     </div>

@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const crypto = require("crypto");
 
 const reservationSchema = new mongoose.Schema(
   {
@@ -24,13 +25,22 @@ const reservationSchema = new mongoose.Schema(
     },
     statut: {
       type: String,
-      enum: ["en_attente", "confirmee", "annulee", "terminee"],
+      enum: ["en_attente", "confirmee", "annulee", "refusee", "terminee"],
       default: "en_attente",
     },
     statutPaiement: {
       type: String,
       enum: ["impaye", "partiel", "paye", "rembourse"],
       default: "impaye",
+    },
+    reference: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+    dateConfirmation: {
+      type: Date,
+      default: null,
     },
     paiement: {
       type: mongoose.Schema.Types.ObjectId,
@@ -54,6 +64,15 @@ const reservationSchema = new mongoose.Schema(
 reservationSchema.index({ voyageur: 1 });
 reservationSchema.index({ trajet: 1 });
 reservationSchema.index({ statut: 1 });
+// reference a déjà un index via unique:true, sparse:true
+
+reservationSchema.methods.genererReference = function () {
+  const prefix = "MB";
+  const rand = crypto.randomBytes(4).toString("hex").toUpperCase();
+  const ts = Date.now().toString(36).toUpperCase();
+  this.reference = `${prefix}-${ts}-${rand}`;
+  return this.reference;
+};
 
 reservationSchema.methods.toPublic = function () {
   const obj = this.toObject();

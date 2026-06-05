@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import reservationService from "../services/reservation.service";
 import Toast from "../components/Toast";
+import TicketModal from "../components/TicketModal";
 import "../styles/dashboard.css";
 
 const statutLabel = {
   en_attente: "En attente",
   confirmee: "Confirmée",
   annulee: "Annulée",
+  refusee: "Refusée",
   terminee: "Terminée",
 };
 
@@ -22,6 +24,7 @@ const MesReservations = () => {
   const [reservations, setReservations] = useState([]);
   const [chargement, setChargement] = useState(true);
   const [toast, setToast] = useState(null);
+  const [ticketId, setTicketId] = useState(null);
 
   useEffect(() => {
     const charger = async () => {
@@ -53,9 +56,12 @@ const MesReservations = () => {
     day: "numeric", month: "long", year: "numeric",
   });
 
+  const peutAfficherTicket = (r) => r.statut === "confirmee" || r.statut === "terminee";
+
   return (
     <div className="dashboard-page">
       {toast && <Toast {...toast} onClose={() => setToast(null)} />}
+      {ticketId && <TicketModal reservationId={ticketId} onClose={() => setTicketId(null)} />}
 
       <div className="dashboard-header">
         <h1>Mes réservations</h1>
@@ -111,11 +117,18 @@ const MesReservations = () => {
                   <td><span className={`badge ${r.statut}`}>{statutLabel[r.statut]}</span></td>
                   <td><span className={`badge ${r.statutPaiement}`}>{statutPaiementLabel[r.statutPaiement]}</span></td>
                   <td>
-                    {r.statut !== "annulee" && r.statut !== "terminee" && (
-                      <button className="btn-action red" onClick={() => handleAnnuler(r._id)}>
-                        Annuler
-                      </button>
-                    )}
+                    <div style={{ display: "flex", gap: "0.25rem", flexWrap: "wrap" }}>
+                      {peutAfficherTicket(r) && (
+                        <button className="btn-action blue" onClick={() => setTicketId(r._id)}>
+                          🎫 Ticket
+                        </button>
+                      )}
+                      {r.statut === "en_attente" && (
+                        <button className="btn-action red" onClick={() => handleAnnuler(r._id)}>
+                          Annuler
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </motion.tr>
               ))}

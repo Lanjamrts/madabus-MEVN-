@@ -30,6 +30,11 @@ const reservationService = {
     const res = await api.put(`/reservations/${id}/statut`, donnees);
     return res.data;
   },
+
+  obtenirTicket: async (id) => {
+    const res = await api.get(`/reservations/${id}/ticket`);
+    return res.data;
+  },
 };
 
 export default reservationService;

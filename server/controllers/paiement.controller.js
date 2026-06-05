@@ -59,7 +59,6 @@ const confirmerPaiement = async (req, res) => {
     const reservation = await Reservation.findById(paiement.reservation);
     if (reservation) {
       reservation.statutPaiement = "paye";
-      reservation.statut = "confirmee";
       reservation.paiement = paiement._id;
       await reservation.save();
     }
