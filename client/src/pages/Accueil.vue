@@ -2,7 +2,6 @@
   <section class="hero">
     <div
       class="hero-content"
-      style="opacity: 0; animation: fadeUp 0.8s forwards"
     >
       <div class="hero-badge">Transport à Madagascar</div>
       <h1 class="hero-title">
@@ -38,8 +37,7 @@
         v-for="(s, i) in steps"
         :key="s.num"
         class="step-card"
-        :style="{ animationDelay: `${i * 0.15}s` }"
-        style="opacity: 0; animation: fadeUp 0.5s forwards"
+        :style="{ '--delay': `${i * 0.15}s` }"
       >
         <div class="step-number">{{ s.num }}</div>
         <h3>{{ s.title }}</h3>
@@ -59,8 +57,7 @@
         v-for="(f, i) in features"
         :key="f.title"
         class="feature-card"
-        :style="{ animationDelay: `${i * 0.1}s` }"
-        style="opacity: 0; animation: fadeUp 0.4s forwards"
+        :style="{ '--delay': `${i * 0.1}s` }"
       >
         <div class="feature-icon" :style="{ background: f.bg }">{{ f.icon }}</div>
         <h3>{{ f.title }}</h3>
@@ -76,6 +73,8 @@
 </template>
 
 <script setup>
+import "../styles/home.css";
+
 const steps = [
   { num: "1", title: "Recherchez", desc: "Choisissez votre ville de départ, destination et date." },
   { num: "2", title: "Réservez", desc: "Sélectionnez votre trajet et réservez vos places." },
@@ -91,9 +90,5 @@ const features = [
 </script>
 
 <style scoped>
-@keyframes fadeUp {
-  to { opacity: 1; transform: translateY(0); }
-}
-.fade-up { opacity: 0; transform: translateY(30px); animation: fadeUp 0.6s forwards; }
 .step-card, .feature-card { transform: translateY(20px); }
 </style>

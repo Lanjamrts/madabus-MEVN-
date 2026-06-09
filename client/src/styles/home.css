@@ -266,6 +266,24 @@
   font-size: 0.9rem;
 }
 
+/* Animation globale (hors scoped pour être accessible depuis les styles inline) */
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-content,
+.step-card,
+.feature-card {
+  opacity: 0;
+  animation: fadeUp forwards;
+}
+
+.hero-content { animation-duration: 0.8s; }
+.step-card { animation-duration: 0.5s; animation-delay: var(--delay, 0s); }
+.feature-card { animation-duration: 0.4s; animation-delay: var(--delay, 0s); }
+
+.fade-up { opacity: 0; transform: translateY(30px); animation: fadeUp 0.6s forwards; }
+
 @media (max-width: 768px) {
   .hero { min-height: 70vh; }
   .hero-actions { flex-direction: column; align-items: center; }
