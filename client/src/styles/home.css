@@ -253,14 +253,6 @@
   text-align: center;
 }
 
-.footer-logo {
-  font-size: 1.5rem;
-  font-weight: 800;
-  margin-bottom: 0.5rem;
-}
-
-.footer-logo span { color: #c8102e; }
-
 .footer p {
   color: #9ca3af;
   font-size: 0.9rem;

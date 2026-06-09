@@ -27,20 +27,9 @@
 }
 
 .navbar-logo-img {
-  width: 36px;
-  height: 36px;
+  width: 178px;
+  height: 178px;
   object-fit: contain;
-}
-
-.navbar-logo-text {
-  font-size: 20px;
-  font-weight: 700;
-  color: #1a7a3c;
-  letter-spacing: -0.5px;
-}
-
-.navbar-logo-bus {
-  color: #c8102e;
 }
 
 /* Liens nav */

@@ -25,7 +25,6 @@
                 <div class="ticket-header">
                   <div class="ticket-brand">
                     <img src="/diamora.png" alt="" class="ticket-logo" />
-                    <span class="ticket-brand-name">Mada<span>Bus</span></span>
                   </div>
                   <div class="ticket-ref-badge">{{ ticket.reference }}</div>
                   <span class="ticket-badge-confirme">✓ Confirmé</span>
@@ -160,8 +159,6 @@ const handleImprimer = () => {
           body { font-family: 'Segoe UI', system-ui, sans-serif; padding: 2rem; color: #111827; }
           .ticket-print { max-width: 500px; margin: 0 auto; border: 2px solid #1a7a3c; border-radius: 20px; padding: 2rem; }
           .ticket-header { text-align: center; border-bottom: 2px dashed #e5e7eb; padding-bottom: 1.5rem; margin-bottom: 1.5rem; }
-          .ticket-title { font-size: 1.5rem; font-weight: 800; color: #1a7a3c; }
-          .ticket-title span { color: #c8102e; }
           .ticket-ref { font-size: 0.85rem; color: #6b7280; margin-top: 0.25rem; }
           .ticket-info { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
           .info-item label { font-size: 0.75rem; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.3px; display: block; margin-bottom: 0.25rem; }
@@ -175,7 +172,7 @@ const handleImprimer = () => {
       <body>
         <div class="ticket-print">
           <div class="ticket-header">
-            <div class="ticket-title">Mada<span>Bus</span></div>
+            <img src="/diamora.png" alt="" style="width:48px;height:48px;object-fit:contain;margin-bottom:0.5rem" />
             <div class="ticket-ref">Réf: ${content.reference}</div>
             <span class="badge-confirme">✓ Confirmé</span>
           </div>
@@ -192,7 +189,7 @@ const handleImprimer = () => {
           <div class="ticket-qr">
             <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${content.reference}" alt="QR Code" />
           </div>
-          <div class="ticket-footer">MadaBus - Réservation de transport à Madagascar</div>
+          <div class="ticket-footer">Réservation de transport à Madagascar</div>
         </div>
       </body>
     </html>

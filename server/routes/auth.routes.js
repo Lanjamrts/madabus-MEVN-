@@ -1,6 +1,6 @@
 const express = require("express");
 const { body } = require("express-validator");
-const { inscription, connexion, moi } = require("../controllers/auth.controller");
+const { inscription, connexion, moi, modifierProfil } = require("../controllers/auth.controller");
 const { proteger } = require("../middleware/auth.middleware");
 
 const router = express.Router();
@@ -45,5 +45,6 @@ const validationConnexion = [
 router.post("/inscription", validationInscription, inscription);
 router.post("/connexion",   validationConnexion,   connexion);
 router.get("/moi",          proteger,              moi);
+router.put("/profil",       proteger,              modifierProfil);
 
 module.exports = router;

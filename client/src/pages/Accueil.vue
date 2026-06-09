@@ -67,7 +67,7 @@
   </section>
 
   <footer class="footer">
-    <div class="footer-logo">Mada<span>Bus</span></div>
+    <img src="/diamora.png" alt="Diamora" style="width:48px;height:48px;object-fit:contain;margin-bottom:0.75rem" />
     <p>Réservation de transport à Madagascar &mdash; &copy; {{ new Date().getFullYear() }}</p>
   </footer>
 </template>

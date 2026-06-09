@@ -127,6 +127,53 @@ const connexion = async (req, res) => {
   }
 };
 
+// @route   PUT /api/auth/profil
+// @desc    Modifier le profil de l'utilisateur connecté
+// @access  Privé
+const modifierProfil = async (req, res) => {
+  try {
+    const { nom, prenom, email, telephone } = req.body;
+    const userId = req.user._id;
+
+    const misesAJour = {};
+    if (nom !== undefined) misesAJour.nom = nom;
+    if (prenom !== undefined) misesAJour.prenom = prenom;
+    if (telephone !== undefined) misesAJour.telephone = telephone;
+
+    if (email !== undefined) {
+      const emailExiste = await User.findOne({ email, _id: { $ne: userId } });
+      if (emailExiste) {
+        return res.status(409).json({
+          success: false,
+          message: "Cet email est déjà utilisé par un autre compte.",
+        });
+      }
+      misesAJour.email = email;
+    }
+
+    if (Object.keys(misesAJour).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Aucune donnée à modifier.",
+      });
+    }
+
+    const user = await User.findByIdAndUpdate(userId, misesAJour, {
+      new: true,
+      runValidators: true,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Profil mis à jour avec succès.",
+      user: user.toPublic(),
+    });
+  } catch (error) {
+    console.error("Erreur modification profil :", error);
+    res.status(500).json({ success: false, message: "Erreur serveur." });
+  }
+};
+
 // @route   GET /api/auth/moi
 // @desc    Récupérer l'utilisateur connecté
 // @access  Privé
@@ -143,4 +190,4 @@ const moi = async (req, res) => {
   }
 };
 
-module.exports = { inscription, connexion, moi };
+module.exports = { inscription, connexion, moi, modifierProfil };

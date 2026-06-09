@@ -3,7 +3,6 @@
     <div class="navbar-inner">
       <router-link to="/" class="navbar-logo">
         <img src="/diamora.png" alt="Diamora" class="navbar-logo-img" />
-        <span class="navbar-logo-text">Mada<span class="navbar-logo-bus">Bus</span></span>
       </router-link>
 
       <button v-if="auth.user" class="hamburger" @click="mobileOuvert = !mobileOuvert" aria-label="Menu">

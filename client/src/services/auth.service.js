@@ -30,6 +30,12 @@ const authService = {
     localStorage.removeItem("madabus_token");
   },
 
+  // Modifier le profil
+  modifierProfil: async (donnees) => {
+    const res = await api.put("/auth/profil", donnees);
+    return res.data;
+  },
+
   // Vérifier si un token existe
   tokenExiste: () => {
     return !!localStorage.getItem("madabus_token");

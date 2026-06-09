@@ -30,10 +30,16 @@ export const useAuthStore = defineStore("auth", () => {
     return data;
   };
 
+  const modifierProfil = async (donnees) => {
+    const data = await authService.modifierProfil(donnees);
+    user.value = data.user;
+    return data;
+  };
+
   const deconnecter = () => {
     authService.deconnecter();
     user.value = null;
   };
 
-  return { user, chargement, init, inscrire, connecter, deconnecter };
+  return { user, chargement, init, inscrire, connecter, modifierProfil, deconnecter };
 });

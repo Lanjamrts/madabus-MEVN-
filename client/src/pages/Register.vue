@@ -11,7 +11,6 @@
           @error="handleImgError"
         />
         <div class="auth-logo-fallback" style="display: none">MB</div>
-        <h1 class="auth-app-name">Mada<span>Bus</span></h1>
         <p class="auth-subtitle">Créer votre compte</p>
       </div>
 
